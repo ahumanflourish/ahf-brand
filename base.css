@@ -6,39 +6,52 @@
    primitives, and the shared Button sets `focus:outline-none` with nothing in
    its place. Packaging that without a replacement would propagate a real
    accessibility defect to every consumer.
+
+   EVERYTHING that sets a property a utility could also set MUST live inside
+   `@layer base`. Unlayered CSS beats every cascade layer, so a bare rule here
+   silently outranks the utilities in `@layer utilities` — which means a
+   component asking for `placeholder:text-subtle/60` would be overruled by this
+   file and have no way to win short of `!important`. This was caught the first
+   time the marketing site was migrated onto the package: the base placeholder
+   colour was quietly overriding a component's own.
+
+   Rules that are genuinely meant to win regardless — the reduced-motion and
+   print blocks, which already use `!important` — stay outside the layer.
    --------------------------------------------------------------------------- */
 
-body {
-  background: var(--color-surface);
-  color: var(--color-ink);
-  /* Not var(--font-sans): that token is `@theme inline` and so is not emitted
-     as a custom property. Point at the next/font variable directly. */
-  font-family: var(--font-instrument), sans-serif;
-  font-size: var(--text-body);
-}
+@layer base {
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    /* Not var(--font-sans): that token is `@theme inline` and so is not emitted
+       as a custom property. Point at the next/font variable directly. */
+    font-family: var(--font-instrument), sans-serif;
+    font-size: var(--text-body);
+  }
 
-/* Focus is dotted, matching the border language where dotted = subtle/idle.
-   :focus-visible rather than :focus so it appears for keyboard users without
-   ringing every mouse click. Never remove this without providing a
-   replacement — `outline: none` alone makes the UI unusable by keyboard. */
-:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
-  outline: var(--border-thick) dotted var(--color-accent);
-  outline-offset: 2px;
-}
+  /* Focus is dotted, matching the border language where dotted = subtle/idle.
+     :focus-visible rather than :focus so it appears for keyboard users without
+     ringing every mouse click. Never remove this without providing a
+     replacement — `outline: none` alone makes the UI unusable by keyboard. */
+  :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: var(--border-thick) dotted var(--color-accent);
+    outline-offset: 2px;
+  }
 
-::selection {
-  background: var(--color-accent);
-  color: var(--color-surface);
-}
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-surface);
+  }
 
-/* Colour only — no opacity. Tailwind's preflight deliberately sets
-   `opacity: 1` here to normalise Firefox, and components routinely dim
-   placeholders themselves with a modifier like `placeholder:text-subtle/60`.
-   Setting opacity here too compounds with that (0.6 colour x 0.6 opacity is
-   about 36% effective) and quietly pushes placeholder text under the contrast
-   floor. Let the component decide the weight. */
-::placeholder {
-  color: var(--color-subtle);
+  /* Colour only — no opacity. Tailwind's preflight deliberately sets
+     `opacity: 1` here to normalise Firefox, and components routinely dim
+     placeholders themselves with a modifier like `placeholder:text-subtle/60`.
+     Setting opacity here too compounds with that (0.6 colour x 0.6 opacity is
+     about 36% effective) and quietly pushes placeholder text under the contrast
+     floor. Let the component decide the weight. */
+  ::placeholder {
+    color: var(--color-subtle);
+  }
 }
 
 @keyframes fade-in {
@@ -52,8 +65,12 @@ body {
   }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.7s ease-out both;
+/* In the utilities layer, not unlayered, so an app can override the animation
+   with its own utility rather than having to resort to !important. */
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.7s ease-out both;
+  }
 }
 
 /* The brand's motion is slow by design, which makes it more likely than usual
