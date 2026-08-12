@@ -14,12 +14,16 @@
      Body is the browser default (16px). Chosen over the 14px and 15px variants
      in use elsewhere because this is a system for reading — the marketing site
      is mostly prose, and shrinking body text is a decision each app should have
-     to make loudly rather than inherit quietly. */
+     to make loudly rather than inherit quietly.
+
+     Only sizes with no Tailwind equivalent are tokenised. Control text
+     (buttons, badges, nav) is `text-xs` and body is `text-base` — restating
+     those here would create a second source of truth for the same number,
+     which is the drift this package exists to prevent. */
   --text-micro: 0.5rem; /* 8px  — the smallest legible uppercase label */
   --text-label: 0.625rem; /* 10px — meta labels inside tools */
   --text-meta: 0.6875rem; /* 11px — dense secondary text */
-  --text-control: 0.75rem; /* 12px — buttons, badges, nav */
-  --text-body: 1rem; /* 16px — prose */
+  --text-body: 1rem; /* 16px — prose; used by base.css for the body rule */
 
   /* --- Uppercase letter-spacing -------------------------------------------
      Three steps, and only three. Anything uppercase uses one of them. Letter-
@@ -31,4 +35,11 @@
 
   /* --- Leading ------------------------------------------------------------ */
   --leading-display: 1.15; /* Fraunces headings, which set tight */
+
+  /* Links are underlined dotted and go solid on hover — the same solid/dotted
+     grammar the borders use. The offset needs to clear Instrument Sans's
+     descenders without floating off the word. It happens to equal
+     --inset-double today; that is a coincidence, not a relationship, so it
+     gets its own token and the two can move apart. */
+  --underline-offset-link: 3px;
 }

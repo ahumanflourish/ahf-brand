@@ -1,20 +1,23 @@
 /* ---------------------------------------------------------------------------
-   Component padding.
+   Layout widths.
 
-   Tailwind's own spacing scale covers layout, so this file deliberately does
-   NOT restate a 4/8/12/16 ramp. What it does cover is the handful of paddings
-   that make a component look like it belongs to this system — the ones that
-   had drifted between apps (cards at p-5 in one and p-3.5 in another, five
-   different input paddings in a third).
+   Tailwind's own spacing scale covers padding, so this file deliberately does
+   NOT restate a 4/8/12/16 ramp — and it no longer tokenises component paddings
+   either. An earlier draft had --pad-card / --pad-control / --pad-input, but
+   every one of them resolved to a value Tailwind already spells (p-5, px-5
+   py-2.5, …), so the components used the utility and the tokens sat dead.
+   A token nothing reads is worse than no token: editing it appears to work and
+   changes nothing. Component padding consistency is enforced by the components
+   themselves — Card owns its two densities, Button owns its padding.
+
+   Add --pad-input here when the Input primitive lands in v0.2, and make Input
+   actually read it.
+
+   Shell widths are different: three apps wrote seventeen variations of the
+   same page wrapper between them, and there is no Tailwind scale equivalent
+   for these, so they belong here and PageShell reads them directly.
    --------------------------------------------------------------------------- */
 :root {
-  --pad-card: 1.25rem; /* 20px — default container */
-  --pad-card-compact: 0.875rem; /* 14px — dense UI */
-  --pad-control: 0.625rem 1.25rem; /* 10/20px — buttons */
-  --pad-control-compact: 0.25rem 0.75rem; /* 4/12px — pills, chips */
-  --pad-input: 0.5rem 0.75rem; /* 8/12px — inputs, selects */
-
-  /* Page shells. Three apps wrote seventeen variations of this between them. */
   --shell-narrow: 42rem; /* forms, settings, single-column reading */
   --shell-prose: 56rem; /* article and detail pages */
   --shell-wide: 67.5rem; /* dashboards, boards, listings */
