@@ -31,9 +31,14 @@ body {
   color: var(--color-surface);
 }
 
+/* Colour only — no opacity. Tailwind's preflight deliberately sets
+   `opacity: 1` here to normalise Firefox, and components routinely dim
+   placeholders themselves with a modifier like `placeholder:text-subtle/60`.
+   Setting opacity here too compounds with that (0.6 colour x 0.6 opacity is
+   about 36% effective) and quietly pushes placeholder text under the contrast
+   floor. Let the component decide the weight. */
 ::placeholder {
   color: var(--color-subtle);
-  opacity: 0.6;
 }
 
 @keyframes fade-in {
