@@ -1,0 +1,53 @@
+/* ---------------------------------------------------------------------------
+   Colour — palette and roles.
+
+   Two layers on purpose. The palette holds the raw brand colours; the roles say
+   what a colour *means* in the UI. Components should reach for the role, so a
+   re-skin or a dark theme is a token swap here rather than a find-and-replace
+   across every file.
+
+   NOT `@theme inline`: utilities must compile to `var(--color-surface)` rather
+   than a baked-in hex, which is what lets a theme block override a role at
+   runtime. `@theme inline` would defeat that.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* --- Palette ----------------------------------------------------------- */
+  --color-cream: #f5f0e8;
+  --color-warm-black: #1a1715;
+  --color-terracotta: #c17c5a;
+  --color-sage: #7a8b6f;
+  --color-dusty-blue: #6b8a9e;
+  --color-gold: #c4a86b;
+  --color-stone: #948a7c;
+  --color-deep-green: #4a5e3f;
+  --color-moss: #8a9e6b;
+  --color-bark: #6b5a4a;
+
+  /* --- Roles --------------------------------------------------------------
+     Prefer these over palette names in components. Palette names are correct
+     only when you genuinely mean *that colour* — an illustration, a game
+     piece — rather than a UI role. */
+  --color-surface: var(--color-cream); /* page and panel backgrounds */
+  --color-surface-raised: #fbf8f3; /* panels lifted off the page */
+  --color-ink: var(--color-warm-black); /* primary text */
+  --color-accent: var(--color-terracotta); /* links, active state, emphasis */
+  --color-line: var(--color-stone); /* borders and rules */
+  --color-line-soft: #ddd4c6; /* quieter rules in dense UI */
+  --color-subtle: var(--color-stone); /* secondary text */
+  --color-muted: var(--color-bark); /* tertiary text */
+  --color-marker: var(--color-sage); /* section labels */
+
+  /* --- State --------------------------------------------------------------
+     Two apps independently landed on sage = complete/toward, terracotta =
+     active/away, stone = inactive. Named here so the third doesn't have to
+     rediscover it. The soft tints are fill colours for the same states. */
+  --color-positive: var(--color-sage);
+  --color-positive-soft: #e8ede4;
+  --color-attention: var(--color-terracotta);
+  --color-attention-soft: #f6e7de;
+  --color-inactive: var(--color-stone);
+}
+
+/* `--color-line` and `--color-subtle` resolve to the same value today. They are
+   kept separate deliberately: a dark theme needs to move borders and secondary
+   text independently, and merging them now would make that impossible later. */

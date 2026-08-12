@@ -1,0 +1,34 @@
+/* ---------------------------------------------------------------------------
+   Typography scale.
+
+   Two typefaces, split by job:
+     Fraunces         — display and headings, via the `font-display` utility
+     Instrument Sans  — body, UI, labels
+
+   Sizes were drifting across apps (body was 14px in one, 15px in another,
+   browser default in a third; labels were ad-hoc 8/9/10/11/13px). Named here
+   so the next app inherits the answer instead of picking again.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* --- Size ---------------------------------------------------------------
+     Body is the browser default (16px). Chosen over the 14px and 15px variants
+     in use elsewhere because this is a system for reading — the marketing site
+     is mostly prose, and shrinking body text is a decision each app should have
+     to make loudly rather than inherit quietly. */
+  --text-micro: 0.5rem; /* 8px  — the smallest legible uppercase label */
+  --text-label: 0.625rem; /* 10px — meta labels inside tools */
+  --text-meta: 0.6875rem; /* 11px — dense secondary text */
+  --text-control: 0.75rem; /* 12px — buttons, badges, nav */
+  --text-body: 1rem; /* 16px — prose */
+
+  /* --- Uppercase letter-spacing -------------------------------------------
+     Three steps, and only three. Anything uppercase uses one of them. Letter-
+     spacing on uppercase text is not optional in this system: unspaced caps
+     read as shouting, spaced caps read as considered. */
+  --tracking-label: 0.18em; /* section labels */
+  --tracking-control: 0.12em; /* buttons, badges, nav */
+  --tracking-micro: 0.15em; /* 9–11px meta labels inside tools */
+
+  /* --- Leading ------------------------------------------------------------ */
+  --leading-display: 1.15; /* Fraunces headings, which set tight */
+}

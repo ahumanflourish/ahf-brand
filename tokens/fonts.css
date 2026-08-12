@@ -1,0 +1,21 @@
+/* ---------------------------------------------------------------------------
+   Font family tokens.
+
+   These MUST stay `@theme inline`, and the reason is not obvious.
+
+   `next/font` defines `--font-fraunces` and `--font-instrument` as class-scoped
+   custom properties, and that class goes on `<body>` — not on `:root`. A
+   non-inline `@theme` emits `--font-sans: var(--font-instrument)` into `:root`,
+   where `--font-instrument` is undefined; the declaration resolves to the
+   guaranteed-invalid value and inherits down as invalid, so every `font-sans`
+   utility silently falls back to the browser default.
+
+   `inline` makes the utilities resolve `var(--font-instrument)` at the element
+   instead, where the variable is actually in scope.
+
+   Consumers must apply the font variables to <body> — see `fonts.ts`.
+   --------------------------------------------------------------------------- */
+@theme inline {
+  --font-sans: var(--font-instrument);
+  --font-serif: var(--font-fraunces);
+}

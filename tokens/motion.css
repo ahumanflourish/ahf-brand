@@ -1,0 +1,24 @@
+/* ---------------------------------------------------------------------------
+   Motion.
+
+   One curve, two speeds. The slow one is the brand's signature: 1.2s on colour
+   and border changes reads as deliberate rather than snappy, and it is the
+   single easiest thing to get wrong when adding a new app.
+
+   Three separate codebases arrived at this exact cubic-bezier independently,
+   which is why it is here.
+
+   Tailwind v4 note: the `duration-*` utility reads from the
+   `--transition-duration-*` namespace, NOT `--duration-*`. A token named
+   `--duration-slow` compiles to nothing at all, silently.
+   --------------------------------------------------------------------------- */
+@theme {
+  --ease-brand: cubic-bezier(0.23, 1, 0.32, 1);
+
+  --transition-duration-slow: 1200ms; /* colour and layout — deliberate */
+  --transition-duration-fast: 300ms; /* hover and focus feedback */
+}
+
+/* Reach for `transition-colors` or an explicit property list rather than
+   `transition-all` at the slow duration — `transition-all` will also animate
+   layout and transform properties for 1.2s, which is almost never intended. */

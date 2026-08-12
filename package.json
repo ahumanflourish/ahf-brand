@@ -1,0 +1,45 @@
+{
+  "name": "@ahumanflourish/brand",
+  "version": "0.1.0",
+  "description": "A Human Flourish shared design system — tokens, brand utilities and React primitives. Cream and warm black, Fraunces and Instrument Sans, zero border-radius, double borders, slow deliberate motion.",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./styles.css": "./styles.css",
+    "./tokens/*": "./tokens/*",
+    "./base.css": "./base.css",
+    "./utilities.css": "./utilities.css",
+    "./fonts": {
+      "types": "./src/fonts.ts",
+      "default": "./src/fonts.ts"
+    },
+    "./components/*": "./src/components/*"
+  },
+  "files": [
+    "src",
+    "tokens",
+    "styles.css",
+    "base.css",
+    "utilities.css",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "next": ">=15",
+    "react": ">=19",
+    "react-dom": ">=19",
+    "tailwindcss": ">=4.1"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  }
+}

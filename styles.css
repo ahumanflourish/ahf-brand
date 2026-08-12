@@ -1,0 +1,24 @@
+/* ---------------------------------------------------------------------------
+   @ahumanflourish/brand — everything, in dependency order.
+
+   In the consuming app's globals.css:
+
+     @import "tailwindcss";
+     @import "@ahumanflourish/brand/styles.css";
+
+   Order matters: Tailwind first, so `@theme` and `@utility` are defined by the
+   time this file uses them.
+
+   To take the tokens without the base layer — useful for an app with its own
+   product design system — import the individual token files instead.
+   --------------------------------------------------------------------------- */
+
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/motion.css";
+@import "./tokens/borders.css";
+@import "./tokens/spacing.css";
+@import "./tokens/fonts.css";
+
+@import "./utilities.css";
+@import "./base.css";

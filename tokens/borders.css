@@ -1,0 +1,33 @@
+/* ---------------------------------------------------------------------------
+   Borders.
+
+   Borders are this brand's elevation system — there are no shadows and no
+   rounded corners, so weight and style carry all the hierarchy. That makes this
+   the category most worth tokenising, and until now it was the least: every
+   call site hardcoded 1px / 1.5px / 2px, and one app had already drifted to a
+   2px radius.
+
+   Border STYLE is meaningful, not decorative. Inherited from the original
+   Earth.Flow system:
+
+     solid   = primary / emphasis / active / checked
+     dashed  = secondary / pending
+     dotted  = subtle / inactive / idle / focus
+
+   Reach for the style that matches the state rather than picking by looks.
+   --------------------------------------------------------------------------- */
+@theme {
+  --border-thin: 1px; /* dense UI, inner borders */
+  --border-normal: 1.5px; /* compact containers */
+  --border-thick: 2px; /* default container weight */
+
+  /* The double-border motif: how far the inner border sits inside the outer. */
+  --inset-double: 3px;
+
+  /* Zero border-radius is a brand rule, not a default. Sharp corners
+     everywhere — buttons, cards, inputs, containers. It contrasts with the
+     organic line work and is a large part of why the system reads as
+     deliberate rather than templated. An app needing a radius should define
+     its own scoped token rather than redefining this one. */
+  --radius: 0;
+}

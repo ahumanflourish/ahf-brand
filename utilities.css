@@ -1,0 +1,59 @@
+/* ---------------------------------------------------------------------------
+   Brand utilities.
+
+   Three motifs that were being rewritten by hand in every app.
+   --------------------------------------------------------------------------- */
+
+/* Fraunces at its display setting — the heading voice.
+   This exact string had been copied into a `.fr` class in two apps and inlined
+   as a `style={{ fontVariationSettings: ... }}` prop in a dozen more places.
+   Compose it with a size and weight: `font-display text-3xl font-light`. */
+@utility font-display {
+  font-family: var(--font-fraunces), serif;
+  font-variation-settings: "WONK" 1, "SOFT" 100, "opsz" 72;
+  line-height: var(--leading-display);
+}
+
+/* The double-border motif: an outer border on the element, an inner offset
+   border on ::before.
+
+   This utility deliberately owns ONLY the pseudo-element's box and transition.
+   Width, style and colour stay as `before:border-*` classes at the call site,
+   because those legitimately differ per component — and because setting them
+   here would fight the call site in the cascade.
+
+   `border-style: inherit` is the important line: it lets the inner border
+   follow whatever style the outer one is using, so the motif stays in one
+   voice when a container's style changes (see `.rotate-borders`). Override it
+   with an explicit `before:border-dashed` when you want the two to differ. */
+@utility double-border {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: var(--inset-double);
+    pointer-events: none;
+    border-style: inherit;
+    transition: border-color var(--transition-duration-slow) var(--ease-brand);
+  }
+}
+
+/* Border-style rotation — solid, dashed, dotted cycling through siblings.
+   Carried over from the original Earth.Flow system, where it was the thing
+   that made a grid of panels read as hand-set rather than mechanically
+   repeated. Opt-in on a container; never a default, because in most layouts
+   it is noise rather than texture.
+
+     <div className="rotate-borders"> <Card/> <Card/> <Card/> </div> */
+@utility rotate-borders {
+  & > *:nth-child(3n + 1) {
+    border-style: solid;
+  }
+  & > *:nth-child(3n + 2) {
+    border-style: dashed;
+  }
+  & > *:nth-child(3n) {
+    border-style: dotted;
+  }
+}
