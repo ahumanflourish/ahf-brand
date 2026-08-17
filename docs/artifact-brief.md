@@ -1,7 +1,19 @@
 # A Human Flourish — brief for Claude.ai artifacts
 
-Paste this whole file into a Claude Project's custom instructions, or into a
-conversation before asking for an artifact.
+**How to hand this to Claude.** Three ways, best first:
+
+1. **Point at it.** This repo is public, so paste this line and let Claude fetch
+   the current version — no copy for you to maintain:
+   `https://raw.githubusercontent.com/ahumanflourish/ahf-brand/main/docs/artifact-brief.md`
+   See `docs/handoff.md` for the exact wording to use.
+2. **Attach it to a Claude Project** as a knowledge file, so every artifact in
+   that project inherits it without you asking.
+3. **Paste the whole file** into a conversation. Works, but it is ~25 KB and you
+   will be doing it again next time.
+
+The artifact itself always freezes at creation — it cannot reference this file
+at runtime. What options 1 and 2 buy you is that *new* artifacts are always
+built from current values.
 
 **Why this file exists separately from the package.** Artifacts have no build
 step. `@ahumanflourish/brand` is Tailwind-v4-native — its tokens live in
