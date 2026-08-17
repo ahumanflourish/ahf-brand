@@ -12,8 +12,8 @@
    silently outranks the utilities in `@layer utilities` — which means a
    component asking for `placeholder:text-subtle/60` would be overruled by this
    file and have no way to win short of `!important`. This was caught the first
-   time the marketing site was migrated onto the package: the base placeholder
-   colour was quietly overriding a component's own.
+   time a real app was migrated onto the package: the base placeholder colour was
+   quietly overriding a component's own.
 
    Rules that are genuinely meant to win regardless — the reduced-motion and
    print blocks, which already use `!important` — stay outside the layer.

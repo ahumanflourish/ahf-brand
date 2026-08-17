@@ -12,9 +12,9 @@
 @theme {
   /* --- Size ---------------------------------------------------------------
      Body is the browser default (16px). Chosen over the 14px and 15px variants
-     in use elsewhere because this is a system for reading — the marketing site
-     is mostly prose, and shrinking body text is a decision each app should have
-     to make loudly rather than inherit quietly.
+     in use elsewhere because this is a system for reading — the pages it
+     dresses are mostly prose, and shrinking body text is a decision each app
+     should have to make loudly rather than inherit quietly.
 
      Only sizes with no Tailwind equivalent are tokenised. Control text
      (buttons, badges, nav) is `text-xs` and body is `text-base` — restating

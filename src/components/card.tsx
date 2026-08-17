@@ -5,8 +5,8 @@
  * contributed:
  *
  *   - the site's tokenised classes and `transition-colors` on CardTitle
- *   - job's `forwardRef`, so a card can be an anchor / scroll target
- *   - job's compact density, as an explicit prop rather than a fork
+ *   - `forwardRef` from the other, so a card can be an anchor / scroll target
+ *   - the other's compact density, as an explicit prop rather than a fork
  *
  * The outer border carries the state (line → accent on hover); the inner
  * `::before` rule follows it. The transition on `::before` lives in the

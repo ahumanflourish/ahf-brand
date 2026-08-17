@@ -15,10 +15,10 @@ rebuilding a Button.
 It was extracted from four apps that had already built the same thing
 independently, not designed up front:
 
-- 6 of 8 UI primitives were **byte-identical** between `ahumanflourish-site` and `job`
-- the ten-colour palette was byte-identical across three apps
-- `factoring` independently invented the role names `--surface`, `--line`,
-  `--subtle`, and the same `cubic-bezier(0.23, 1, 0.32, 1)`
+- 6 of 8 UI primitives were **byte-identical** across two of them
+- the ten-colour palette was byte-identical across three
+- one had independently arrived at the role names `--surface`, `--line`,
+  `--subtle`, and at the same `cubic-bezier(0.23, 1, 0.32, 1)`
 - the Fraunces display setting had been abstracted twice under different names
   and inlined as a `style` prop a dozen more times
 
@@ -116,8 +116,8 @@ Pick the style that matches the state, not the one that looks good.
 
 **Tokens** — `tokens/colors.css`, `typography.css`, `motion.css`, `borders.css`,
 `spacing.css`, `fonts.css`. Import individually if you want the tokens without
-the base layer (epistack does this: it keeps its own product design system and
-takes only what applies).
+the base layer — useful for an app that keeps its own product design system and
+takes only what applies here.
 
 **Utilities** — `font-display` (Fraunces at its display setting), `double-border`
 (the inner-offset border motif), `rotate-borders` (solid/dashed/dotted cycling
@@ -152,9 +152,9 @@ at runtime.
   in the original Earth.Flow system but have no React consumer yet. Port on
   demand, not speculatively.
 - **Carousel, EmailCapture, Footer** — built once, in one app.
-- **Epistack's shadows, radii and palette** — a genuinely different product
-  system with an opposite elevation model. It consumes tokens from here; it keeps
-  its own components.
+- **Anything from a sibling product system** with an opposite elevation model —
+  hard offset shadows, a non-zero radius, a snappier easing curve. Such an app
+  should consume tokens from here and keep its own components.
 - **A spacing ramp.** Tailwind's own scale covers layout. `tokens/spacing.css`
   only names the component paddings that had drifted between apps.
 

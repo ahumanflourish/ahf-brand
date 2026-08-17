@@ -11,7 +11,8 @@
  * APIs, so no `"use client"` — the consumer passing the handler is already a
  * client component.
  *
- * Ported from `job`, with the dead `variant` prop removed: it was declared in
+ * Promoted from the app that had 31 uses of it, with the dead `variant` prop
+ * removed: it was declared in
  * the props interface and passed at two call sites, but never destructured or
  * read. The retokening also moved it off palette names (sage / cream / stone /
  * warm-black) onto the state and role tokens.
