@@ -15,9 +15,22 @@
 @theme {
   --ease-brand: cubic-bezier(0.23, 1, 0.32, 1);
 
-  --transition-duration-slow: 1200ms; /* colour and layout — deliberate */
-  --transition-duration-fast: 300ms; /* hover and focus feedback */
+  --transition-duration-slow: 1200ms; /* ambient state — deliberate */
+  --transition-duration-fast: 300ms; /* anything the user is driving */
 }
+
+/* Which speed to use is decided by WHO caused the change, not by which property
+   changed. Getting this wrong makes controls feel broken.
+
+   `duration-slow` is for ambient state — a hover settling, a card responding to
+   the pointer passing over it, a value easing to a new position. Nobody is
+   waiting on it.
+
+   `duration-fast` is for anything the user is directly driving: a selection, a
+   toggle, a checked state, a segmented control, a tab. The user has just
+   clicked and is waiting for the interface to confirm it. A 1.2s colour change
+   there reads as an unresponsive control, not as a deliberate one — the first
+   tool built against this system hit exactly that and had to override it. */
 
 /* Reach for `transition-colors` or an explicit property list rather than
    `transition-all` at the slow duration — `transition-all` will also animate
