@@ -262,3 +262,49 @@ Ordered by how much they matter for a financial tool:
 `fetch`, no `fs`, no dynamic import, no timers. Pure ESM functions over `Date`,
 `Math`, arrays. Inlines into a single HTML file trivially: 21KB engine + 12.5KB
 benchmarks + 2.4KB strategies, against the artifact's 16MiB limit.
+
+---
+
+# REPO LAYOUT — proposed 2026-08-18
+
+Supersedes the "Marketplace infrastructure" line above, which put the marketplace
+in `ahf-brand`. It should not live there.
+
+**One `ahf-tools` repo. It *is* the plugin marketplace, and every tool lives in it.**
+
+    ahf-tools/
+      .claude-plugin/marketplace.json   the marketplace itself
+      tools/portfolio/
+        skill/          the skill Claude Code loads
+        core/           the engine + benchmark data (publishes to npm)
+        dashboard.html  the template the skill populates locally
+        artifact.html   claude.ai source; version-controlled, pasted over by hand
+      tools/<next>/     same shape
+
+Adding tool #2 is a directory and a marketplace entry — no new repo, no new
+Vercel project, no new npm scope. A repo per tool was rejected for exactly that
+per-tool tax.
+
+**Why not `ahf-brand`:** it is consumed by four apps and releases when design
+tokens change; tools release when a tool changes. Coupling them makes every
+benchmark-data refresh a version bump on four apps' dependency. Also
+`/plugin marketplace add ahumanflourish/ahf-brand` to install a financial tool
+is the first command a user sees, and it reads wrong. `ahf-brand` stays the
+design system; `ahf-tools` consumes it.
+
+**The artifact stays authored in claude.ai** — the auth-injecting proxy only
+exists in that runtime. Draft it here against `docs/artifact-brief.md`, keep the
+source in the repo, hand it over with publication instructions. That is a
+publishing quirk, not a second repo.
+
+## The directory move
+
+`/root/portfolio-core` is 10 files, one commit (`ae247f2`), **no git remote —
+never pushed**. So this is a rename, not a migration:
+
+    /root/portfolio-core/{src,test,package.json,tsconfig.json,.gitignore}
+      -> /root/ahf-tools/tools/portfolio/core/
+
+`package.json` keeps the name `@ahumanflourish/portfolio-core` and every path in
+it stays relative, so nothing inside the package changes. The site consumes it by
+published version, not by path, so the site is unaffected either way.
