@@ -197,3 +197,68 @@ repo and claude.ai, with nothing to strip on the way over.
    validator against the real brand tokens before any chart code).
 4. Path B + parser hardening. 5. V2 chart. 6. Offline single-file build.
 7. Artifact wrapper + Path C.
+
+---
+
+# ENGINE PORT — DONE, one open question
+
+`/root/portfolio-core` built, `tsc --noEmit` clean under strict, **7 of 8 tests
+pass**. `engine.ts` is **byte-identical** to the handoff source (md5
+`2aa757033344c351fa3946194f90446b`, verified both sides) — zero edits, zero
+runtime deps, devDeps are just `typescript` + `vitest`.
+
+**Every number reproduces.** endingValue 53690.25 exact; xirr 0.10054387 vs
+0.100544; GLOBAL_EQUITY 60328.401 vs 60328.40; pctKept 0.68129 vs 0.6812. Dollar
+figures agree to a tenth of a cent, with orders of magnitude of tolerance spare.
+Benchmark data integrity confirmed: `meta.coverage` is accurate, no gaps, the one
+null (`INTL_TOTAL.1996`) is documented in `meta.notes`.
+
+## The open question — needs a decision
+
+`regional-tilt` does not fire, and cannot. Fixture holdings give **usShare
+76.83%**, a **13.83pp** deviation from the engine's 63% market weight. The engine
+requires **>15pp**, which matches `SPEC.md` verbatim. So the engine and the spec
+agree, and the *fixture's expected findings list* is the outlier.
+
+Candidate explanations for the original analysis firing it: a 60% market weight
+(→16.83pp, fires) or a 10pp threshold. Including cash in the denominator does not
+do it (74.71% → 11.71pp). **Left deliberately failing** rather than massaged.
+Resolve by deciding which is authoritative — engine/spec threshold, or fixture.
+
+## Engine defects found (reported, NOT fixed — decide before UI)
+
+Ordered by how much they matter for a financial tool:
+
+1. **Partial years are labelled as years.** `you.annual` returns `2021: 0.0334`
+   (2 months) and `2026: 0.0719` (7 months) un-annualised, alongside four full
+   years. They feed `deriveFindings`, so upside/downside capture ratios are
+   computed partly from partial periods. This is a correctness problem, not
+   cosmetic — a 2-month stub shown as a year misleads.
+2. **First-year window misalignment.** For 2021 the user's Modified Dietz starts
+   at the first observed balance (2021-10-31) while the strategy compounds from
+   2021-09-30. Two different windows, then divided by each other in the
+   capture-asymmetry check.
+3. **`buildStrategySeries` throws hard for histories before 2021-10** — an
+   uncaught `Error`, not a degraded result. This is the monthly-data gap in code
+   form; every target needs the input gate or option (b) before real users touch it.
+4. **`deriveFindings` reads the wall clock** (`new Date().getUTCFullYear()`),
+   making `analyse()` non-deterministic and fragile at year boundaries, in a
+   module whose docblock claims determinism. Should take a `now` parameter.
+5. **The engine never reads `data.annual`** — only `data.monthly`. The 30 years of
+   annual data currently ship as dead bundle weight. Relevant to artifact payload
+   size and to how option (b) would be implemented.
+6. Type/data mismatches a consumer must paper over: `strategies.json` carries
+   `default`/`requiresAfter` that `StrategyDef` doesn't declare; `fixtures.json`
+   puts `holdings` as a sibling of `input` while `PortfolioInput.holdings` lives
+   inside it — **without merging them, `regional-tilt`/`size-tilt` can never fire
+   at all**.
+7. `replay` yields `NaN` on a −100% month (fractional power of a negative base);
+   unreachable with current data but unguarded. `feeShare` bisection silently
+   returns its ceiling (`endingValue * 3`) rather than failing. Both bisections run
+   500/200 iterations where ~60 exhausts double precision — wasted cycles if the
+   UI recomputes per keystroke in the review table.
+
+**Nothing in the engine blocks any of the three targets.** No Node APIs, no
+`fetch`, no `fs`, no dynamic import, no timers. Pure ESM functions over `Date`,
+`Math`, arrays. Inlines into a single HTML file trivially: 21KB engine + 12.5KB
+benchmarks + 2.4KB strategies, against the artifact's 16MiB limit.
