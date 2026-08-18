@@ -44,7 +44,37 @@ so other artifacts and skills install individually, no cloning.
   the CSV and use the upload path — same tool, no model involved. Document both.
 - **The plugin ships the dashboard**, so `/plugin update` keeps it current.
 
-## Where to build it — unresolved, matters
+## The runtime API — confirmed
+
+The artifact does **not** use a bespoke `window.claude.complete`. It calls the
+real Messages API directly:
+
+    fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },   // no x-api-key
+      body: JSON.stringify({ model, max_tokens, messages })
+    })
+
+No API key and no `anthropic-version` header — the claude.ai proxy injects both,
+and bills the viewer. Verified working multi-turn in August 2026. Consequences:
+
+- **The local dev harness is trivial.** The artifact source stays byte-identical;
+  a dev-only shim intercepts `fetch` for that URL and either returns canned
+  responses or forwards to the real API with an `x-api-key` header added. Nothing
+  to strip on the way to claude.ai.
+- **The request shape is the documented one**, so the standard docs apply —
+  system prompts, tool use, structured outputs, streaming.
+- **It is portable.** If this ever needs to run outside claude.ai, the only
+  changes are adding the key and the `anthropic-version: 2023-06-01` header.
+
+Model note: the test artifact uses `claude-sonnet-4-6`, which is the previous
+generation. `claude-sonnet-5` and `claude-opus-5` are current. Worth testing
+whether the proxy accepts them — the reformatting step is exactly the kind of
+structured-extraction work where the newer models are stronger, and structured
+outputs (`output_config.format`) would let the CSV schema be enforced by the API
+rather than by parsing whatever comes back.
+
+## Where to build it — resolved enough to proceed
 
 The artifact calls Claude at runtime. Artifacts published from Claude Code
 declare capabilities from a fixed roster, and this account's roster is
