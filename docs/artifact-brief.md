@@ -139,11 +139,19 @@ Both must be `true`.
   --leading-display: 1.15;
 
   /* Heading scale. Fraunces sets tight; these are display sizes, not a
-     general ramp. Use clamp() for the page title so it survives narrow
-     viewports. */
-  --text-h1: clamp(34px, 5vw, 52px);
-  --text-h2: 26px;
-  --text-h3: 20px;
+     general ramp.
+
+     These match the built site, where headings are restrained: no heading
+     anywhere exceeds 30px. The only type larger than this is a big tabular
+     NUMBER (a score, a total) — a number may be 36-48px, a heading may not.
+     A 52px title is not this brand; it reads as a landing page from a
+     different studio. */
+  --text-h1: clamp(24px, 3vw, 30px);
+  --text-h2: 20px;
+  --text-h3: 18px;
+
+  /* Reserved for a single large figure, never for words. */
+  --text-figure: clamp(36px, 5vw, 48px);
 }
 
 body {
@@ -344,6 +352,16 @@ wrong is exactly what "close but not quite" looks like.
   Unspaced caps read as shouting.
 - **Headings are always `.display`.** Fraunces at `WONK 1, SOFT 100, opsz 72`,
   weight 300. Never bold Fraunces.
+- **Headings are coloured, not black.** The page title is `--accent`
+  (terracotta). `--ink` is for body text; a warm-black heading is the single
+  most common way an otherwise correct page still looks wrong. Deep-green is
+  the accepted alternative where terracotta would clash with the content's own
+  meaning — the site uses it for the games, and reserves terracotta for the
+  tools that tell you something about yourself.
+- **Do not put an uppercase eyebrow above the title by default.** The built
+  site does not use one: the title sits at the top, centred, close to the nav.
+  `.label` is for section headings further down the page. An eyebrow over the
+  h1 is a magazine convention, not this brand's.
 - **Let it breathe.** The cream background needs room; prefer generous
   whitespace over dense layouts.
 
