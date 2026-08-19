@@ -718,3 +718,34 @@ volunteer. Three trials each way:
   `input_tokens: 4179` for "Reply with the single word: ok". A five-turn
   conversation burns ~21k tokens before a statement is attached. This settles
   §2's one-call-not-a-conversation recommendation on cost alone.
+
+---
+
+# DECISION — transfer-labelled rows with no matching leg (2026-08-19)
+
+The parser reports rows whose type token is transfer-like (Schwab's
+`MoneyLink Transfer`, `TRANSFER FROM BANK`) rather than classifying them. That is
+safe but wrong in practice: at that broker it is the commonest contribution shape,
+so the most important row in the file arrives needing a manual fix.
+
+**Decision: auto-classify, marked `estimated`, but ONLY when the row cannot be an
+internal transfer.**
+
+The dangerous case is already covered by a different mechanism. A transfer-labelled
+row WITH a matching equal-and-opposite leg inside `findMatchedFlows`' 7-day window
+is the $11,375 trap, and must stay a question put to the user. A transfer-labelled
+row with NO matching leg is money arriving from outside, and its sign says which
+direction. So:
+
+1. Parse and retain the row with its transfer-like token.
+2. Run `findMatchedFlows` over the full set.
+3. Any transfer-labelled row that PAIRS stays unclassified and surfaces the
+   transfer question.
+4. Any that does NOT pair is classified from its sign — positive contribution,
+   negative withdrawal — with `confidence: 'estimated'` and the reason recorded.
+
+The review table is still the gate; nothing reaches the maths unconfirmed. This
+only changes whether the user starts from a sensible default or from a blank.
+
+Note the ordering constraint: transfer detection must run BEFORE classification,
+which is the reverse of the obvious pipeline. Do not classify then detect.
