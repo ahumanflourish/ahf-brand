@@ -277,6 +277,16 @@ and catches a whole class of extraction error the schema cannot.
 
 ### Failure states
 
+> **CORRECTION (2026-08-19, after measurement).** Two claims below were written
+> before the proxy was probed and are WRONG. (a) The signed-out row expects a
+> non-OK status or a login-page body; in fact claude.ai intercepts with a modal
+> and the request NEVER REACHES THE API, so code written against that row would
+> hang — a timeout is required, not an error branch. (b) The argument for
+> `claude-sonnet-5` on the grounds that `claude-sonnet-4-6` lacks structured
+> outputs is contradicted by measurement: the A/B ran on 4-6, post-remap, and got
+> 3/3 schema compliance. See "PROXY BEHAVIOUR — MEASURED" at the end of this file,
+> which supersedes this section wherever they disagree.
+
 | Condition | Detection | Behaviour |
 |---|---|---|
 | Signed out / no entitlement | non-OK status, or a body that isn't JSON (a login page) | "Claude couldn't be reached — you may be signed out. Everything you've entered is still here." Keep state. Offer A/B. |
