@@ -368,3 +368,57 @@ corrected before the real run.
 - **Inline everything, embed the fonts.** **[D/I]**
 - **Name all four Fraunces axes, then verify mechanically.** **[M]**
 - **Every probe needs a negative control and a marker the model would never volunteer.** **[I]**
+
+---
+
+# PROBE BATCH 2 — MEASURED 2026-08-19, 11:56 UTC
+
+Six probes, all PASS. These resolve five items previously listed as unverified
+and one listed as UNRESOLVED. Served model was `claude-sonnet-4-6` throughout.
+
+| # | Question | Result |
+|---|---|---|
+| 1 | `output_config` + base64 `document` TOGETHER | **[M] WORKS.** The production shape. 4 rows returned, schema-valid. |
+| 2 | `thinking: {type:'enabled', budget_tokens:N}` | **[M] WORKS.** Thinking blocks come back with signatures. |
+| 3 | `stream: true` | **[M] TRUE STREAMING.** TTFB 2591ms of 3287ms total, 11 SSE events, 8 chunks — not buffered-then-flushed. |
+| 4 | `system` parameter | **[M] OBEYED, AND ADDITIVE.** The caller's system prompt reaches the model on top of the proxy's own ~4.2k. It does NOT replace it — do not assume you can override what the proxy already says. |
+| 5 | Google Fonts vs CSP | **[M] LOADS. Contradiction RESOLVED.** Stylesheet `load` fired, 2 network entries (300B css + 35KB woff), `document.fonts.check('12px Fraunces')` true, **zero CSP violations**. |
+| 6 | All three at once (thinking + document + output_config) | **[M] WORKS.** This is the shape to build against. |
+
+## Consequences that change existing decisions
+
+- **Thinking is available, so the biggest cost of the silent model remap is
+  recoverable.** `claude-sonnet-4-6` does no thinking unless asked, and the two
+  extraction traps that caused real errors in the original analysis —
+  reconstructing balances from cumulative quarterly columns, and spotting
+  internal transfers — are exactly the reasoning-heavy cases. Probe 6's thinking
+  block shows the model explicitly reasoning *"The balance column is cumulative
+  (not transactions), so I should not include those"*. Enable it.
+- **Streaming works, so `max_tokens` is no longer coupled to the timeout.** The
+  extraction module's 180s ceiling was sized for a non-streaming worst case and
+  can now be driven off real deltas, with a progress indicator that means
+  something.
+- **Remote fonts are a CAPABILITY that exists.** Embedding them remains the right
+  call, but the reason is PRIVACY — "nothing leaves this page" verifiable in the
+  network tab — not a CSP limitation. Any doc claiming artifacts cannot fetch
+  external stylesheets is wrong. `SPEC.md`'s "cdnjs imports allowed" is
+  consistent with this after all.
+- **Latency is the new constraint, not capability.** The full production shape
+  took **24.7 seconds** on a trivial one-page document. A forty-page statement
+  will be far slower. That is an argument for streaming and a visible progress
+  indicator, not for a shorter timeout.
+
+## Two things worth noticing in the model's raw output
+
+Both are prompt-and-validation concerns, not proxy behaviour:
+
+1. It returned `type: "transfer"` — a value outside the three-way enum the real
+   schema uses. Our schema handles transfers through `excluded[]` with a reason
+   code, which is right, but the model's instinct is to type them inline. The
+   enum must stay closed and the prompt explicit.
+2. It returned `amount: -450.00` for a withdrawal. The schema carries no
+   `minimum` (the API silently drops it), and the contract is that all three row
+   types carry POSITIVE amounts with direction given by `type`. A signed amount
+   that slips through would double-count the direction. Client-side validation
+   must catch and normalise this — it is exactly the class of silent error the
+   review table exists to stop.
