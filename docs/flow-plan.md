@@ -477,7 +477,24 @@ bound each series (2065 launched 2017; 2060 in 2012; the rest 2003–2006), and 
 `requiresAfter` / `meta.inception` gating handles that already. Also needs nine
 `strategies.json` entries with `funds[]` and the same expense-ratio caution.
 
-**Rejected: a synthetic glide path** from `GLOBAL_EQUITY` + `BOND_TOTAL` at published
+**BUILT 2026-08-19, and the objection below was measured rather than dismissed.**
+See `benchmarks`-adjacent `glide-path.json` and `targetDateStrategy()`. What
+answered it: the path is *sourced*, not fitted — 19 dated cross-sections from
+Vanguard's own 485BPOS filings, each citing an accession number — and it is
+checked against the one real fund that exists, reconciling to VTTSX at 10.19bp
+per month over 2021-10..2026-07.
+
+The concern below was nonetheless RIGHT, and is now quantified. The construction
+models THREE sleeves where a real fund holds six; `benchmarks.json` carries no
+short-term TIPS and no hedged international bond series. The error tracks bond
+share monotonically: ~7.5bp/yr rms for the 2060 fund at 10% bonds, **58.4bp/yr
+for the 2020 fund at 54%**. It is weakest exactly where someone is closest to
+retirement, and the near-dated end has no monthly ground truth at all. That is
+stated in the strategy's own caution, not only here.
+
+Original note, kept because the reasoning still governs what to do next:
+
+**Previously rejected — a synthetic glide path** from `GLOBAL_EQUITY` + `BOND_TOTAL` at published
 target weights. It computes fine and is exactly the invisible-plausible-wrong class the
 spec warns about — real target-date funds hold TIPS, short-term TIPS and international
 bonds and reallocate on their own schedule. If it is ever built it must be labelled
