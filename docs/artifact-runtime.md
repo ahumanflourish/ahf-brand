@@ -473,3 +473,38 @@ Resolved out of §3: streaming, `system`, `thinking`, `output_config`+`document`
 Downgraded **[U] → [I]**: `temperature`/`stop_sequences`, streamed `usage`. Added to §3:
 prompt precedence, streaming the full shape, `thinking` billing, latency scaling, font
 axes.
+
+---
+
+## Changelog — batch 3, persistence, 2026-08-20 02:07 UTC
+
+Seven probes. **`window.storage` exists, works, and PERSISTS ACROSS RELOADS** —
+confirmed by a two-run test where run 2 read back run 1's timestamp. This
+supersedes §4's inherited "`localStorage` blocked / persistent storage is
+paid-plans-only" claim, which was second-hand from `SPEC.md` and was about a
+different API.
+
+| Finding | Detail |
+|---|---|
+| `window.storage` present | **[M] b3** |
+| Round-trip lossless | **[M] b3** unicode, quotes, backslashes, newlines all survive. JSON is safe to cache. |
+| **A MISSING KEY THROWS** | **[M] b3** `get` on an absent key raises `Error: Storage get failed`. It does NOT return null. Every read needs try/catch — the probe's own words: "the single easiest way to crash a caching layer". |
+| Value ceiling 5 MB per key | **[M] b3** 5,000,000 bytes wrote; 6,000,000 failed. Batch per document, not per row. |
+| Key constraints, enforced loudly | **[M] b3** rejected: whitespace, `/`, `\`, `'`, `"`, and 260 chars. 199 chars passed. Failures surface immediately rather than silently. |
+| `shared` vs personal namespaces | **[M] b3** the same key holds different values per scope. **Use `shared: false` for anything user-specific** — shared scope means every viewer overwrites every other viewer's data, which for financial figures would be a disclosure, not just a bug. |
+| Latency is real | **[M] b3** ~1.3s for a small set+get; 5.1s for a 5 MB write. Not free; do not write on every keystroke. |
+| Raw browser APIs also reachable | **[M] b3** localStorage, sessionStorage, IndexedDB and cookies all responded — but the sandbox origin is opaque and this is an unsupported path. Use `window.storage`, not these. |
+
+**What this changes.** An hour-long flow can now offer save-and-resume without
+asking the user to mind a downloaded file. Two rules follow from the measurements
+rather than from preference: reads must be wrapped, because absence is an
+exception here; and writes must be debounced, because a 5 MB write takes five
+seconds.
+
+**One thing the probes cannot settle.** Whether to store someone's financial
+figures at all is a privacy decision, not a capability one. This storage is
+Anthropic-hosted. On the AI path the statements have already gone to Claude
+under the viewer's own account, so caching is consistent with what already
+happened. On the typed-or-pasted path nothing has left the browser yet, and
+switching that on silently would break the one claim that path makes. Default it
+OFF, offer it in one line, and say where it goes.
