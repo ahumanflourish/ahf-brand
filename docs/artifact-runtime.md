@@ -508,3 +508,32 @@ under the viewer's own account, so caching is consistent with what already
 happened. On the typed-or-pasted path nothing has left the browser yet, and
 switching that on silently would break the one claim that path makes. Default it
 OFF, offer it in one line, and say where it goes.
+
+---
+
+## Batch 3 — persistence, measured 2026-08-20 02:07 UTC
+
+**`window.storage` is a platform API, and it is NOT `localStorage`.** §4's
+inherited claim — "`localStorage` blocked, persistent storage paid-plans-only",
+second-hand from `SPEC.md` with no method or date — was about the browser API.
+It said nothing about the artifact runtime's own store, which works.
+
+| | |
+|---|---|
+| `window.storage` present | **[M] b3** |
+| **Survives a reload** | **[M] b3** two-run test: run 2 read back run 1's timestamp. This is the finding that matters — save-and-resume is viable. |
+| Round-trip lossless | **[M] b3** unicode, quotes, backslashes, newlines. JSON is safe to cache. |
+| **A missing key THROWS** | **[M] b3** `get` on an absent key raises `Storage get failed`; it does not return null. Every read needs try/catch. The probe's own words: the single easiest way to crash a caching layer. |
+| 5 MB per key | **[M] b3** 5,000,000 bytes wrote, 6,000,000 failed. Batch per document, not per row. |
+| Key constraints, enforced loudly | **[M] b3** rejected whitespace, `/`, `\`, `'`, `"`, and 260 chars; 199 passed. Bad keys fail immediately rather than silently. |
+| `shared` vs personal scope | **[M] b3** same key, different value per scope. **`shared: false` for anything user-specific** — shared scope means every viewer overwrites every other viewer's, which for financial figures is a disclosure, not just a bug. |
+| Not free | **[M] b3** ~1.3s for a small set+get, 5.1s for a 5 MB write. Debounce; never write per keystroke. |
+| `localStorage`, `sessionStorage`, IndexedDB, cookies | **[M] b3** all responded — but the sandbox origin is opaque, so they can be wiped or isolated between loads, and this is an unsupported path. **Use `window.storage`.** |
+
+**The decision the probes cannot make.** Whether to store someone's financial
+figures is a privacy question, not a capability one, and the answer differs by
+path. On the AI path the statements have already gone to Claude under the
+viewer's own account, so caching is consistent with what already happened. On
+the typed-or-pasted path nothing has left the browser yet, and switching this on
+silently would break the only claim that path makes. Default OFF, offer it in
+one line, say where it goes.
